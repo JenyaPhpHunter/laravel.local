@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\LabelController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +28,5 @@ Route::prefix('/users')->group(function () {
 });
 
 Route::resource('/tasks', TasksController::class);
+Route::resource('/label', LabelController::class);
+Route::resource('/status', StatusController::class);

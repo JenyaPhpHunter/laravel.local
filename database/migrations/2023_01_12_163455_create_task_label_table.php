@@ -18,8 +18,8 @@ class CreateTaskLabelTable extends Migration
             $table->bigInteger('task_id')->unsigned();
             $table->bigInteger('label_id')->unsigned();
 
-            $table->foreign('task_id')->on('tasks')->references('id');
-            $table->foreign('label_id')->on('labels')->references('id');
+            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('label_id')->references('id')->on('labels');
         });
     }
 

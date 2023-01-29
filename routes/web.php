@@ -23,10 +23,11 @@ Route::get('/', [HomeController::class,'arbitrary'])->name('main');
 Route::prefix('/users')->group(function () {
     Route::post('/registration', [UsersController::class,'registration'])->name("users.registration");
     Route::post('/authorization', [UsersController::class,'authorization'])->name("users.authorization");
-    Route::get('/', [UsersController::class,'show'])->name("users.show");
+    Route::get('/', [UsersController::class,'index'])->name("users.index");
+    Route::get('/{id}', [UsersController::class,'show'])->name("users.show");
     Route::delete('/{id}', [UsersController::class,'destroy'])->name("users.destroy");
 });
 
 Route::resource('/tasks', TasksController::class);
-Route::resource('/label', LabelController::class);
-Route::resource('/status', StatusController::class);
+Route::resource('/labels', LabelController::class);
+Route::resource('/statuses', StatusController::class);

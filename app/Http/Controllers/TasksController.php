@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Task;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 
@@ -13,7 +15,21 @@ class TasksController extends Controller
      */
     public function index()
     {
-        return "Отображает список всех сущностей";
+//        $tasks = DB::table('tasks')
+//            ->select(['tasks.id','tasks.creator_id','tasks.title','tasks.content','tasks.status_id','users.name'])
+//            ->join('users','users.id', '=', 'tasks.creator_id')
+//            ->orderBy('id','desc')
+//            ->get();
+//        return "<pre>" . print_r($tasks,true) . "</pre>";
+        $tasks = Task::query()->with('status')->orderBy('id', 'desc')->get();
+        foreach($tasks as $task){
+            echo "Title = " . $task->title . "<br>" . "Content = " . $task->content . "<br>";
+            echo "Имя статуса - " . $task->status->name . "<br>";
+            foreach ($task->labels as $label){
+                echo "Color Label - " . $label->color . "<br>";
+            }
+
+        }
     }
 
     /**
@@ -46,7 +62,18 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        return "просмотр одной сущносте у которой id = " . $id;
+//        $task = DB::table('tasks')->where('id',$id)->first();
+//        return "<pre>" . print_r($task,true) . "</pre>";
+        $task = Task::query()
+            ->select(['tasks.id', 'tasks.creator_id','tasks.title','tasks.content','users.name'])
+            ->join('users','users.id', '=', 'tasks.creator_id')
+            ->where('tasks.id',$id)->first();
+        $title = $task->title;
+        $content = $task->content;
+        $creator_name = $task->name;
+        echo "creator name = " . $creator_name . "<br>" .
+            "title = " . $title . "<br>" .
+            "content = " . $content . "<br>";
     }
 
     /**
@@ -80,6 +107,6 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        return "удаление сущности у которой id = " . $id . "из хранилища";
+        DB::table('tasks')->delete($id);
     }
 }

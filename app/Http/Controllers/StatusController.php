@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StatusController extends Controller
 {
@@ -13,7 +15,16 @@ class StatusController extends Controller
      */
     public function index()
     {
-        return "Список statuses";
+//        $statuses = DB::table('statuses')->select('name')->orderBy('id','desc')->get();
+//        return "<pre>" . print_r($statuses,true) . "</pre>";
+        $statuses = Status::query()->with('tasks')->orderBy('id','desc')->get();
+        $statuses->each(function($status){
+            $name = $status->name;
+            echo "Name status = " . $name . "<br>";
+            foreach ($status->tasks as $task) {
+                echo "CONTENT IS " . $task->content . "<br>";
+            }
+        });
     }
 
     /**
@@ -45,7 +56,16 @@ class StatusController extends Controller
      */
     public function show($id)
     {
-        //
+//        $status = DB::table('statuses')->where('id',$id)->first();
+//        return "<pre>" . print_r($status,true) . "</pre>";
+        $status = Status::query()->where('id', $id)->first();
+        $name = $status->name;
+        $tasks = $status->tasks;
+        echo "Name status = " . $name . "<br>";
+        foreach ($tasks as $task) {
+            echo "Title with Status " . $id . " = " .$task->title . "<br>";
+        }
+
     }
 
     /**
@@ -79,6 +99,8 @@ class StatusController extends Controller
      */
     public function destroy($id)
     {
-        //
+//        DB::table('statuses')->delete($id);
+        Status::destroy($id);
     }
+
 }

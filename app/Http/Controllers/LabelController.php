@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LabelController extends Controller
 {
@@ -13,7 +15,8 @@ class LabelController extends Controller
      */
     public function index()
     {
-        return "Список Labels";
+        $labels = DB::table('labels')->select(['name','color'])->orderBy('id','desc')->get();
+        return "<pre>" . print_r($labels,true) . "</pre>";
     }
 
     /**
@@ -45,7 +48,13 @@ class LabelController extends Controller
      */
     public function show($id)
     {
-        //
+//        $label = DB::table('labels')->where('id',$id)->first();
+//        return "<pre>" . print_r($label,true) . "</pre>";
+        $label = Label::query()->where('id',$id)->first();
+        $tasks = $label->tasks;
+        foreach ($tasks as $task){
+         echo $task->title. "<br>";
+        }
     }
 
     /**
@@ -79,6 +88,6 @@ class LabelController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::table('labels')->delete($id);
     }
 }

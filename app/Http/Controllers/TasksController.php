@@ -21,15 +21,22 @@ class TasksController extends Controller
 //            ->orderBy('id','desc')
 //            ->get();
 //        return "<pre>" . print_r($tasks,true) . "</pre>";
-        $tasks = Task::query()->with('status')->orderBy('id', 'desc')->get();
-        foreach($tasks as $task){
-            echo "Title = " . $task->title . "<br>" . "Content = " . $task->content . "<br>";
-            echo "Имя статуса - " . $task->status->name . "<br>";
-            foreach ($task->labels as $label){
-                echo "Color Label - " . $label->color . "<br>";
-            }
 
-        }
+//        $tasks = Task::query()->with('status')->orderBy('id', 'desc')->get();
+//        foreach($tasks as $task){
+//            echo "Title = " . $task->title . "<br>" . "Content = " . $task->content . "<br>";
+//            echo "Имя статуса - " . $task->status->name . "<br>";
+//            foreach ($task->labels as $label){
+//                echo "Color Label - " . $label->color . "<br>";
+//            }
+//        }
+        $tasks = Task::query()->with('status')->orderBy('id', 'desc')->get();
+        $hello = 'Hello';
+        return view('tasks.index',[
+            'tasks' => $tasks,
+            "hello" => $hello
+        ]);
+
     }
 
     /**
@@ -39,7 +46,7 @@ class TasksController extends Controller
      */
     public function create()
     {
-        return "Вывод формы создания сущности";
+        return view('tasks.create');
     }
 
     /**
@@ -50,8 +57,15 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
-        return "Сохранение сущности в хранилище";
+        $task = new Task();
+        $task->creator_id = $request->post('creator_id');
+        $task->title = $request->post('title');
+        $task->content = $request->post('content');
+        $task->status_id = $request->post('status_id');
 
+        $task->save();
+
+        return redirect(route('tasks.index'));
     }
 
     /**
@@ -64,16 +78,25 @@ class TasksController extends Controller
     {
 //        $task = DB::table('tasks')->where('id',$id)->first();
 //        return "<pre>" . print_r($task,true) . "</pre>";
+
+//        $task = Task::query()
+//            ->select(['tasks.id', 'tasks.creator_id','tasks.title','tasks.content','users.name'])
+//            ->join('users','users.id', '=', 'tasks.creator_id')
+//            ->where('tasks.id',$id)->first();
+//        $title = $task->title;
+//        $content = $task->content;
+//        $creator_name = $task->name;
+//        echo "creator name = " . $creator_name . "<br>" .
+//            "title = " . $title . "<br>" .
+//            "content = " . $content . "<br>";
         $task = Task::query()
             ->select(['tasks.id', 'tasks.creator_id','tasks.title','tasks.content','users.name'])
             ->join('users','users.id', '=', 'tasks.creator_id')
             ->where('tasks.id',$id)->first();
-        $title = $task->title;
-        $content = $task->content;
-        $creator_name = $task->name;
-        echo "creator name = " . $creator_name . "<br>" .
-            "title = " . $title . "<br>" .
-            "content = " . $content . "<br>";
+        return view('tasks.show',[
+            'task' => $task
+        ]);
+
     }
 
     /**
@@ -84,7 +107,11 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        return "открывается фотрма редактирования сущности у которой id = " . $id;
+        $task = Task::query()->where('id',$id)->first();
+        if(!$task){
+            throw new \Exception('Task not found');
+        }
+        return view('tasks.edit', ['task' => $task]);
     }
 
     /**
@@ -96,7 +123,15 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return "обновление сущности у которой id = " . $id . "в хранилище";
+        $task = Task::query()->where('id',$id)->first();
+        $task->creator_id = $request->post('creator_id');
+        $task->title = $request->post('title');
+        $task->content = $request->post('content');
+        $task->status_id = $request->post('status_id');
+
+        $task->save();
+
+        return redirect( route('tasks.show', ['task' => $id]));
     }
 
     /**
@@ -107,6 +142,7 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('tasks')->delete($id);
+        $task = Task::query()->where('id',$id)->delete();
+        return redirect( route('tasks.index'));
     }
 }

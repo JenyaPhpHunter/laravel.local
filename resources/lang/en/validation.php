@@ -142,6 +142,20 @@ return [
     */
 
     'custom' => [
+        'creator_id' => [
+            'required' => 'Надо ввести CREATOR_ID',
+        ],
+        'title' => [
+            'required' => 'Надо ввести TITLE',
+            'max' => 'Слишком длнинный TITLE',
+            'alpha_dash' => 'В поле TITLE должны быть только буквы и цифры',
+        ],
+        'content' => [
+            'required' => 'Надо ввести CONTENT',
+        ],
+        'status_id' => [
+            'required' => 'Надо ввести STATUS_ID',
+        ],
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],

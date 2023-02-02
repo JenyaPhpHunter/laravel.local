@@ -5,6 +5,7 @@ use App\Models\Task;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TasksController extends Controller
 {
@@ -57,11 +58,34 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
+//        $validator = Validator::make([
+//            $request->post('creator_id'),
+//            $request->post('title'),
+//            $request->post('content'),
+//            $request->post('status_id')], [
+//            'creator_id' => 'required',
+//            'title' => 'required|unique:tasks|max:255',
+//            'content' => 'required',
+//            'status_id' => 'required',
+//            'created_at' => 'nullable|timestamp',
+//        ], $messages = [
+//            'required' => ':attribute является обязательным полем.',
+//        ]);
+
+        $validated = $request->validate([
+            'creator_id' => 'required',
+            'title' => 'required|unique:tasks|max:15|alpha_dash:ascii',
+            'content' => 'required',
+            'status_id' => 'required',
+            'created_at' => 'nullable|date_format:Y-m-d H:i:s',
+        ]);
+
         $task = new Task();
         $task->creator_id = $request->post('creator_id');
         $task->title = $request->post('title');
         $task->content = $request->post('content');
         $task->status_id = $request->post('status_id');
+        $task->created_at = $request->post('created_at');
 
         $task->save();
 
@@ -123,11 +147,20 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'creator_id' => 'required',
+            'title' => 'required|unique:tasks|max:15|alpha_dash:ascii',
+            'content' => 'required',
+            'status_id' => 'required',
+            'updated_at' => 'nullable|date_format:Y-m-d H:i:s',
+        ]);
+
         $task = Task::query()->where('id',$id)->first();
         $task->creator_id = $request->post('creator_id');
         $task->title = $request->post('title');
         $task->content = $request->post('content');
         $task->status_id = $request->post('status_id');
+        $task->updated_at = $request->post('updated_at');
 
         $task->save();
 

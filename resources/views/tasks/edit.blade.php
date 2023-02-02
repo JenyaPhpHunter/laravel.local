@@ -2,6 +2,20 @@
 
 @section('content')
     <h1>Редактирование задачи</h1>
+
+    {{--    @error('title')--}}
+    {{--    <div class="alert alert-danger">Title - обязательное поле</div>--}}
+    {{--    @enderror--}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="post" action="{{ route('tasks.update', ['task' => $task->id]) }}">
         @csrf
         @method('put')
@@ -23,6 +37,11 @@
         <label for="status_id">Status_id</label>
         <br>
         <input id="status_id" name="status_id" value="{{$task->status_id}}">
+        <br><br>
+
+        <label for="udated_at">Udated_at</label>
+        <br>
+        <input id="udated_at" name="udated_at" value="{{date('Y-m-d H:i:s')}}">
         <br><br>
 
         <input type="submit" value="Сохранить">

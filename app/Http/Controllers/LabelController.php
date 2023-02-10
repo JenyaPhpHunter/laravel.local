@@ -15,8 +15,11 @@ class LabelController extends Controller
      */
     public function index()
     {
-        $labels = DB::table('labels')->select(['name','color'])->orderBy('id','desc')->get();
-        return "<pre>" . print_r($labels,true) . "</pre>";
+        $labels = Label::all();
+
+        return view('labels.index',[
+            'labels' => $labels
+        ]);
     }
 
     /**
@@ -26,7 +29,7 @@ class LabelController extends Controller
      */
     public function create()
     {
-        //
+        return view('labels.create');
     }
 
     /**
@@ -37,7 +40,13 @@ class LabelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $label = new Label();
+        $label->name = $request->post('name');
+        $label->color = $request->post('color');
+
+        $label->save();
+
+        return redirect(route('labels.index'));
     }
 
     /**
@@ -48,13 +57,15 @@ class LabelController extends Controller
      */
     public function show($id)
     {
-//        $label = DB::table('labels')->where('id',$id)->first();
-//        return "<pre>" . print_r($label,true) . "</pre>";
-        $label = Label::query()->where('id',$id)->first();
-        $tasks = $label->tasks;
-        foreach ($tasks as $task){
-         echo $task->title. "<br>";
-        }
+        $labels = Label::query()
+//            ->select(['labels.id', 'labels.name','labels.color','tasks.title','tasks.content'])
+            ->join('task_label','labels.id', '=', 'task_label.label_id')
+            ->join('tasks','tasks.id', '=', 'task_label.task_id')
+            ->where('labels.id',$id)
+            ->get();
+        return view('labels.show',[
+            'labels' => $labels
+        ]);
     }
 
     /**
@@ -65,7 +76,11 @@ class LabelController extends Controller
      */
     public function edit($id)
     {
-        //
+        $label = Label::query()->where('id',$id)->first();
+        if(!$label){
+            throw new \Exception('Label not found');
+        }
+        return view('labels.edit', ['label' => $label]);
     }
 
     /**
@@ -77,7 +92,14 @@ class LabelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $label = Label::query()->where('id',$id)->first();
+        $label->name = $request->post('name');
+        $label->color = $request->post('color');
+
+        $label->save();
+
+        return redirect( route('labels.show', ['label' => $id]));
+
     }
 
     /**

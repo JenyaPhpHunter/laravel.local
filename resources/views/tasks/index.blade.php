@@ -18,9 +18,11 @@
                 Content: {{$task->content}}
                 <br>
                 Status task: {{$task->status->name}}
+                <br>
 {{--                @if(isset($task->created_at))--}}
                 @isset($task->created_at)
                     Created: {{$task->created_at}}
+                    <br>
                 @endisset
 {{--                @endif--}}
                 <a href="{{ route('tasks.edit',['task' => $task->id])}}">Редактировать задачу</a>

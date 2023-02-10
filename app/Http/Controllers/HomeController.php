@@ -6,6 +6,6 @@ class HomeController extends Controller
 {
     public function arbitrary()
     {
-         return "arbitrary method HomeController class works";
+         return " method HomeController class works";
     }
 }
